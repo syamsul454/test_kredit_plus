@@ -1,20 +1,20 @@
 package app
 
 import (
+	"test_kredit_plus/controller/auth_controller"
 	konsumen_controller "test_kredit_plus/controller/konsumen_controler"
+	"test_kredit_plus/middleware"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/go-playground/validator"
 )
 
-func NewRouter(controller konsumen_controller.KonsumenControler) *gin.Engine {
-	r := gin.Default()
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("required", func(fl validator.FieldLevel) bool {
-			return fl.Field().String() != ""
-		})
-	}
+func NewRouter(r *gin.Engine, controller konsumen_controller.KonsumenControler) *gin.Engine {
+	r.Use(middleware.JWTChatMiddleware())
 	r.POST("/register", controller.Register)
+	return r
+}
+
+func RouterLogin(r *gin.Engine, cont auth_controller.AuthController) *gin.Engine {
+	r.POST("/login", cont.Login)
 	return r
 }
