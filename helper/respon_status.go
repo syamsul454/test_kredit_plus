@@ -14,3 +14,13 @@ func SendInternalServerError(c *gin.Context, err error) {
 	})
 	c.Abort()
 }
+
+func SendStatusOk(c *gin.Context, message string, data map[string]interface{}) {
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"data":    data,
+		"status":  "status Ok",
+		"message": message,
+	})
+	c.Abort()
+}
