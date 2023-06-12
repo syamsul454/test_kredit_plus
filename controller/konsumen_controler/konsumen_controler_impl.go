@@ -44,3 +44,18 @@ func (controller *KonsumenControllerImple) Register(c *gin.Context) {
 		"data":    registerRespon,
 	})
 }
+
+func (conroller *KonsumenControllerImple) GetUser(c *gin.Context) {
+	id := c.Value("user").(map[string]interface{})["id"].(string)
+
+	detailKonsumen, err := conroller.KonsumenService.DetailKonsumen(c, id)
+	if err != nil {
+		helper.SendInternalServerError(c, err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "success",
+		"data":    detailKonsumen,
+	})
+}

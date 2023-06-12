@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"test_kredit_plus/app"
 	"test_kredit_plus/controller/auth_controller"
 	konsumen_controller "test_kredit_plus/controller/konsumen_controler"
@@ -11,10 +12,23 @@ import (
 	"test_kredit_plus/service/konsumen_service"
 	"test_kredit_plus/service/login_service"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator"
 )
+
+func init() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              "https://cccda613346b436aa489cd9d2e6119ce@o4504891013857280.ingest.sentry.io/4505344185794560",
+		TracesSampleRate: 1.0,
+		EnableTracing:    true,
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+
+}
 
 func main() {
 	db := app.ConnectDB()

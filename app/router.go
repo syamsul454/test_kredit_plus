@@ -9,8 +9,9 @@ import (
 )
 
 func NewRouter(r *gin.Engine, controller konsumen_controller.KonsumenControler) *gin.Engine {
-	r.Use(middleware.JWTChatMiddleware())
 	r.POST("/register", controller.Register)
+	r.Use(middleware.JWTChatMiddleware())
+	r.GET("/get-user", controller.GetUser)
 	return r
 }
 

@@ -39,6 +39,13 @@ func (konsomen_service *KonsumenServiceImpl) Register(ctx context.Context, regis
 		return map[string]interface{}{}, errors.New("password failed")
 	}
 
+	db := konsomen_service.KonsumenRepository.BeginTransaction(konsomen_service.DB)
+	defer func() {
+		if r := recover(); r != nil {
+			db.Rollback()
+		}
+	}()
+
 	user := modal_user.User{
 		ID:           uuid.New().String(),
 		UserName:     register.Username,
@@ -47,9 +54,10 @@ func (konsomen_service *KonsumenServiceImpl) Register(ctx context.Context, regis
 		StatusActive: "verifikasi",
 	}
 
-	konsumenUser, err := konsomen_service.KonsumenRepository.SaveDataUser(ctx, konsomen_service.DB, user)
+	konsumenUser, err := konsomen_service.KonsumenRepository.SaveDataUser(ctx, db, user)
 
 	if err != nil {
+		db.Rollback()
 		return map[string]interface{}{}, errors.New("username sudah ada")
 	}
 
@@ -90,14 +98,37 @@ func (konsomen_service *KonsumenServiceImpl) Register(ctx context.Context, regis
 		},
 	}
 
-	data_konsumen_result, err := konsomen_service.KonsumenRepository.SaveDataKonsumen(ctx, konsomen_service.DB, data_konsumen)
+	data_konsumen_result, err := konsomen_service.KonsumenRepository.SaveDataKonsumen(ctx, db, data_konsumen)
 	if err != nil {
+		db.Rollback()
 		return map[string]interface{}{}, errors.New("nik sudah ada")
 	}
 	fmt.Println(data_konsumen_result)
+	db.Commit()
 	respon_data := map[string]interface{}{
 		"full_name": register.Full_name,
 		"username":  register.Username,
 	}
+	return respon_data, nil
+}
+
+func (konsomen_service *KonsumenServiceImpl) DetailKonsumen(ctx context.Context, id string) (map[string]interface{}, error) {
+	user, err := konsomen_service.KonsumenRepository.DetailUser(ctx, konsomen_service.DB, id)
+	detail, err := konsomen_service.KonsumenRepository.DetailKonsumen(ctx, konsomen_service.DB, id)
+	if err != nil {
+		return map[string]interface{}{}, errors.New("data tidak ada")
+	}
+
+	respon_data := map[string]interface{}{
+		"full_name":      detail.FullName,
+		"nik":            detail.Nik,
+		"tempat_lahir":   detail.TempatLahir,
+		"tanggal_lahir":  detail.TanggalLahir,
+		"konsumen_tenor": detail.KonsumenTenors,
+		"email":          user.Email,
+		"username":       user.UserName,
+		"status_active":  user.StatusActive,
+	}
+
 	return respon_data, nil
 }

@@ -13,4 +13,7 @@ type KonsumenRepository interface {
 	SaveDataKonsumen(ctx context.Context, db *gorm.DB, Konsumen modal_konsumen.DataKonsumen) (modal_konsumen.DataKonsumen, error)
 	SaveDataTenor(ctx context.Context, db *gorm.DB, Tenor modal_konsumen.KonsumenTenor) modal_konsumen.KonsumenTenor
 	ValidasiCheckUserexist(ctx context.Context, db *gorm.DB, user, nik string) error
+	DetailKonsumen(ctx context.Context, db *gorm.DB, id string) (modal_konsumen.DataKonsumen, error)
+	DetailUser(ctx context.Context, db *gorm.DB, id string) (modal_user.User, error)
+	BeginTransaction(db *gorm.DB) *gorm.DB
 }
