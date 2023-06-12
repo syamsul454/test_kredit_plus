@@ -35,9 +35,6 @@ func checkJWT(tokenString string, secret string) (jwt.MapClaims, error) {
 	var JWT_SIGNING_METHOD = jwt.SigningMethodHS256
 	var JWT_SIGNATURE_KEY = []byte(secret)
 
-	fmt.Println("====<>", tokenString)
-	fmt.Println("====<>", secret)
-
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if method, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signing method invalid")
